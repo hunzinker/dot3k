@@ -18,6 +18,7 @@ from dot3k.menu import Menu
 from plugins.utils import Backlight, Contrast
 from plugins.volume import Volume
 from plugins.clock import Clock
+from plugins.pianobar import Pianobar
 from plugins.radio import Radio
 from plugins.graph import GraphCPU, GraphTemp
 import time
@@ -39,6 +40,7 @@ A function name will call that function.
 menu = Menu({
         'Clock': clock,
         'Radio Stream': Radio(),
+        'Pianobar': Pianobar(),
         'Volume': Volume(backlight),
         'Status': {
             'CPU': GraphCPU(),
