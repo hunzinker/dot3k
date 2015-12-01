@@ -1,5 +1,6 @@
 from dot3k.menu import MenuOption
 import subprocess
+import atexit
 
 class Pianobar(MenuOption):
     def __init__(self):
@@ -14,6 +15,8 @@ class Pianobar(MenuOption):
         self.current_station = None
         self.current_state = None
         self.last_update = 0
+        self.mode = 'main'
+        atexit.register(self.kill)
         self.icons = {
             'play': [0, 24, 30, 31, 30, 24, 0, 0],
             'pause': [0, 27, 27, 27, 27, 27, 0, 0],
@@ -50,6 +53,11 @@ class Pianobar(MenuOption):
                           chr(252) if self.selected_option == 1 else ' ', 1)
         menu.write_option(2, 'Stop' if self.current_state != 'stopped' else 'Play',
                           chr(252) if self.selected_option == 2 else ' ', 1)
+
+    def kill(self):
+        if self.pid is not None:
+            subprocess.call(['/bin/kill', '-9', str(self.pid)])
+            print('Killing pianobar process with PID: ' + str(self.pid))
 
     def send(self, command):
         if self.pid is not None:
