@@ -29,14 +29,34 @@ class Pianobar(MenuOption):
         if 'Pianobar' in self.config.sections():
             self.ready = True
 
-    def right(self):
-        if self.pid is None:
-            self.start()
+    def next_option(self):
+        self.selected_option += 1
+        self.selected_option %= 3
 
-        if self.selected_option == 1:
+    def prev_option(self):
+        self.selected_option -= 1
+        self.selected_option %= 3
+
+    def down(self):
+        if self.mode == 'main':
+            self.next_option()
+        #  else:
+        #      self.selected_station = self.next_station()
+
+    def up(self):
+        if self.mode == 'main':
+            self.prev_option()
+        else:
+            self.selected_station = self.prev_station()
+
+    def right(self):
+        if self.selected_option == 0:
+            self.current_state == 'playing'
+            self.start()
+        elif self.selected_option == 1:
             self.send('p')
         elif self.selected_option == 2 and self.current_state == 'playing':
-            self.send('q')
+            self.send('p')
         elif self.selected_option == 2 and self.current_state == 'stopped':
             self.send('p')
 
@@ -62,12 +82,7 @@ class Pianobar(MenuOption):
     def send(self, command):
         if self.pid is not None:
             try:
-                subprocess.check_ouput(
-                    [
-                        'su ' + self.user + ' -c "echo -ne \"' +
-                            command + '\" > ' + str(self.fifo)]
-
-                )
+                subprocess.call(['./pianobar.sh', str(command)])
             except subprocess.CalledProcessError:
                 pass
 
